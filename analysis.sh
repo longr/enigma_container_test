@@ -1,23 +1,31 @@
-#!/bin/bash --login
+# #!/bin/bash --login
 
-#$ -cwd
-#$ -N SingularityRunPGSCVriend_WMLsegs_in_mni
-#$ -pe smp.pe 32
-#$ -t 1-3
+# #$ -cwd
+# #$ -N SingularityRunPGSCVriend_WMLsegs_in_mni
+# #$ -pe smp.pe 32
+# #$ -t 1-3
 
 # Dr Hamied Haroon
 # hamied.haroon@manchester.ac.uk
 # 15th March 2023
 
-# load FSL module
-module load apps/binapps/fsl/6.0.5
+# ALREADY IN CONTAINER NOW
+## load FSL module
+#module load apps/binapps/fsl/6.0.5
+
+### these are Robin's notes - may need checking
 
 # assign paths for code and input data directories
+
+### Dir contains image of the docker container image that is built in build script
 export code_dir=/mnt/bmh01-rds/Hamied_Haroon_doc/ENIGMA-VascPD/UNets-pgs
+
+### parent dir for project and input data
 export data_path=/scratch/${USER}/ENIGMA-PD-Vasc_manual_seg/Sarah_WML_man_seg/Controls+PD
+
 echo code_dir  : ${code_dir}
 echo data_path : ${data_path}
-echo  
+
 
 # assign path and filename of the list of subject IDs saved as a text file
 export subjids_list=${data_path}/subjects.txt
@@ -113,7 +121,12 @@ cd ..
 
 # run UNets-pgs in Singularity
 echo running UNets-pgs Singularity in ${temp_dir}
-singularity exec --cleanenv ${code_dir}/pgs_cvriend.sif sh /WMHs_segmentation_PGS.sh T1.nii.gz FLAIR.nii.gz results.nii.gz ./input ./output
+#singularity exec --cleanenv ${code_dir}/pgs_cvriend.sif sh /WMHs_segmentation_PGS.sh T1.nii.gz FLAIR.nii.gz results.nii.gz ./input ./output
+
+### Built into contianer, no need to run separate one.
+
+./WMHs_segmentation_PGS.sh T1.nii.gz FLAIR.nii.gz results.nii.gz ./input ./output
+
 echo UNets-pgs done!
 echo  
 

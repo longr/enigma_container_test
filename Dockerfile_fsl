@@ -20,7 +20,10 @@ RUN chmod +x flirt_version.sh
 RUN chmod +x WMHs_check.sh
 
 CMD ["/flirt_version.sh"]
-CMD ["sh", "/WMHs_check.sh"]
+
+## only allowed one CMD per file
+
+#CMD ["sh", "/WMHs_check.sh"]
 
 #CMD /flirt > /home/output.txt 2> /home/error.txt
 

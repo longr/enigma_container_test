@@ -55,12 +55,11 @@ echo temp_dir     : ${temp_dir}
 echo  
 
 # change into temporary data directory and create input and output subdirectories
-cd ${temp_dir}
-mkdir -p ./input
-mkdir -p ./output
+mkdir -p ${temp_dir}/input
+mkdir -p ${temp_dir}/output
 
 # change into input directory ${temp_dir}/input
-cd ./input
+cd ${temp_dir}/input
 
 # copy input T1 and FLAIR images here, renaming them
 cp ${t1_fn}    t1vol_orig.nii.gz
@@ -74,8 +73,8 @@ echo
 # fsl_anat -o t1-mni -i ./t1vol_orig.nii.gz --nocrop
 
 # create new subdirectory to pre-process input FLAIR image, change into it ${temp_dir}/input/flair-bet
-mkdir flair-bet
-cd flair-bet
+mkdir ${temp_dir}/input/flair-bet
+cd ${temp_dir}/input/flair-bet
 
 # run FSL's tools on input FLAIR image to ensure mni orientation followed by brain extraction
 echo preparing flair in ${temp_dir}/input/flair-bet/
@@ -99,7 +98,7 @@ echo flair prep done
 echo  
 
 # change one directory up to ${temp_dir}/input
-cd ..
+cd ${temp_dir}/input
 
 # run FSL's fslroi tool to crop correctly-oriented T1 and co-registered FLAIR, ready for UNets-pgs
 cp ./t1-mni.anat/T1.nii.gz                     T1.nii.gz
@@ -117,7 +116,7 @@ flirt -in T1.nii.gz -omat T1_croppedmore2roi.mat \
    -interp trilinear -ref ./t1-mni.anat/T1.nii.gz
 
 # change one directory up to ${temp_dir}
-cd ..
+cd ${temp_dir}
 
 # run UNets-pgs in Singularity
 echo running UNets-pgs Singularity in ${temp_dir}
@@ -131,7 +130,7 @@ echo UNets-pgs done!
 echo  
 
 # change into output directory ${temp_dir}/output
-cd ./output
+cd ${temp_dir}/output
 
 echo processing outputs in ${temp_dir}/output/
 

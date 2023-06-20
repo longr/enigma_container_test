@@ -1,7 +1,0 @@
-FROM ubuntu:latest
-
-COPY check_ubuntu_release.sh .
-
-RUN chmod +x /check_ubuntu_release.sh
-
-CMD ["/check_ubuntu_release.sh"]

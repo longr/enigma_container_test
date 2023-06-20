@@ -15,11 +15,18 @@ RUN echo '\n # FSL Setup \nFSLDIR=/usr/local/fsl \nPATH=${FSLDIR}/share/fsl/bin:
 
 COPY flirt_version.sh .
 COPY WMHs_check.sh .
+COPY analysis_script.sh .
+
+RUN mkdir /data
+RUN mkdir /code
 
 RUN chmod +x flirt_version.sh
 RUN chmod +x WMHs_check.sh
+RUN chmod +x analysis_script.sh
 
-CMD ["/flirt_version.sh"]
+CMD ["/analysis_script.sh"]
+
+#CMD ["/flirt_version.sh"]
 
 ## only allowed one CMD per file
 

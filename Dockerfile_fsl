@@ -13,25 +13,14 @@ RUN wget https://fsl.fmrib.ox.ac.uk/fsldownloads/fslconda/releases/fslinstaller.
 
 RUN echo '\n # FSL Setup \nFSLDIR=/usr/local/fsl \nPATH=${FSLDIR}/share/fsl/bin:${PATH} \nexport FSLDIR PATH \n. ${FSLDIR}/etc/fslconf/fsl.sh' >> /root/.bashrc
 
-COPY flirt_version.sh .
-COPY WMHs_check.sh .
 COPY analysis_script.sh .
 
 RUN mkdir /data
 RUN mkdir /code
 
-RUN chmod +x flirt_version.sh
-RUN chmod +x WMHs_check.sh
 RUN chmod +x analysis_script.sh
 
 CMD ["/analysis_script.sh"]
-
-#CMD ["/flirt_version.sh"]
-
 ## only allowed one CMD per file
-
-#CMD ["sh", "/WMHs_check.sh"]
-
-#CMD /flirt > /home/output.txt 2> /home/error.txt
 
 ENTRYPOINT []

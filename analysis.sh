@@ -1,5 +1,14 @@
 # #!/bin/bash --login
 
+
+# FSL Setup
+FSLDIR=/usr/local/fsl
+PATH=${FSLDIR}/share/fsl/bin:${PATH}
+export FSLDIR PATH
+. ${FSLDIR}/etc/fslconf/fsl.sh
+
+
+
 # #$ -cwd
 # #$ -N SingularityRunPGSCVriend_WMLsegs_in_mni
 # #$ -pe smp.pe 32

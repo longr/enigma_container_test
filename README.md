@@ -50,3 +50,19 @@ systemctl start docker
 
 Quick notes for building simple container: https://www.baeldung.com/linux/docker-output-redirect
 
+## Convert docker image to sif
+
+This takes up quite a bit of space, so if limitted in tmp move to a new area:
+
+```bash
+export APPTAINER_TMPDIR=/mnt/data/tmp/
+```
+
+convert like so:
+
+```bash
+podman save --format oci-archive busybox:latest -o busybox.tar
+singularity build busybox.sif oci-archive://busybox.tar
+```
+
+

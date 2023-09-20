@@ -135,6 +135,7 @@ cd ${temp_dir}/output
 
 echo processing outputs in ${temp_dir}/output/  >> ${code_dir}/logs.txt 2>&1
 
+echo "copy required images" >> ${code_dir}/logs.txt 2>&1
 # copy required images and transformation/warp coefficients from ${temp_dir}/input here, renaming T1 and FLAIR
 cp ${temp_dir}/input/T1_croppedmore2roi.mat                     .
 cp ${temp_dir}/input/t1-mni.anat/T1.nii.gz                      T1_roi.nii.gz
@@ -145,35 +146,41 @@ cp ${temp_dir}/input/t1-mni.anat/T1_roi2nonroi.mat              .
 cp ${temp_dir}/input/flair-bet/flairbrain2t1brain_inv.mat       .
 cp ${temp_dir}/input/flair-bet/flairvol.nii.gz                  FLAIR_orig.nii.gz
 
+tree ${temp_dir}/input/ >> ${code_dir}/logs.txt 2>&1
+
 # copy MNI T1 template images here
 cp ${FSLDIR}/data/standard/MNI152_T1_2mm.nii.gz        .
 cp ${FSLDIR}/data/standard/MNI152_T1_2mm_brain.nii.gz  .
 
+echo "STEP 01" >> ${code_dir}/logs.txt 2>&1
 # run FSL's flirt tool to transform/align WML segmentations from UNets-pgs with roi-cropped T1
 flirt -in results.nii.gz -applyxfm -init T1_croppedmore2roi.mat \
    -out results2t1roi \
-   -paddingsize 0.0 -interp nearestneighbour -ref T1_roi.nii.gz
+   -paddingsize 0.0 -interp nearestneighbour -ref T1_roi.nii.gz >> ${code_dir}/logs.txt 2>&1
 
+echo "STEP 02" >> ${code_dir}/logs.txt 2>&1
 # run FSL's flirt tool to transform/align WML segmentations from UNets-pgs with full-fov T1
 flirt -in results2t1roi.nii.gz -applyxfm -init T1_roi2nonroi.mat \
    -out results2t1fullfov \
-   -paddingsize 0.0 -interp nearestneighbour -ref T1_fullfov.nii.gz
+   -paddingsize 0.0 -interp nearestneighbour -ref T1_fullfov.nii.gz >> ${code_dir}/logs.txt 2>&1
 
-
+echo "STEP 03" >> ${code_dir}/logs.txt 2>&1
 # run FSL's flirt tool to transform/align WML segmentations with full-fov FLAIR
 flirt -in results2t1roi.nii.gz -applyxfm -init flairbrain2t1brain_inv.mat \
    -out results2flairfullfov \
-   -paddingsize 0.0 -interp nearestneighbour -ref FLAIR_orig.nii.gz
+   -paddingsize 0.0 -interp nearestneighbour -ref FLAIR_orig.nii.gz >> ${code_dir}/logs.txt 2>&1
 
+echo "STEP 04" >> ${code_dir}/logs.txt 2>&1
 # run FSL's flirt tool to linearly transform/align WML segmentations with MNI T1
 flirt -in results2t1roi.nii.gz -applyxfm -init T1_to_MNI_lin.mat \
    -out results2mni_lin \
-   -paddingsize 0.0 -interp nearestneighbour -ref ${FSLDIR}/data/standard/MNI152_T1_2mm_brain.nii.gz
+   -paddingsize 0.0 -interp nearestneighbour -ref ${FSLDIR}/data/standard/MNI152_T1_2mm_brain.nii.gz >> ${code_dir}/logs.txt 2>&1
 
+echo "STEP 06" >> ${code_dir}/logs.txt 2>&1
 # run FSL's applywarp tool to nonlinearly warp WML segmentations with MNI T1
 applywarp --in=results2t1roi.nii.gz --warp=T1_to_MNI_nonlin_coeff.nii.gz \
    --out=results2mni_nonlin \
-   --interp=nn --ref=${FSLDIR}/data/standard/MNI152_T1_2mm_brain.nii.gz
+   --interp=nn --ref=${FSLDIR}/data/standard/MNI152_T1_2mm_brain.nii.gz >> ${code_dir}/logs.txt 2>&1
 
 # copy all contents of temporary data directory to output data directory, and delete temporary data directory
 echo copying all contents   >> ${code_dir}/logs.txt 2>&1

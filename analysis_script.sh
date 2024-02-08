@@ -69,7 +69,8 @@ cp ${flair_fn} flairvol_orig.nii.gz
 
 # run FSL's fsl_anat tool on the input T1 image, with outputs saved to a new subdirectory ${temp_dir}/input/t1-mni.anat
 echo running fsl_anat on t1 in ${temp_dir}/input/t1-mni.anat/  >> ${code_dir}/logs.txt 2>&1
-fsl_anat -o t1-mni -i ./t1vol_orig.nii.gz
+# flags this will stop fsl_anat going through unnecessary steps and generating outputs we don’t use.
+fsl_anat -o t1-mni -i ./t1vol_orig.nii.gz --nononlinreg --noseg --nosubcortseg
 echo fsl_anat done  >> ${code_dir}/logs.txt 2>&1
 echo   >> ${code_dir}/logs.txt 2>&1
 # fsl_anat -o t1-mni -i ./t1vol_orig.nii.gz --nocrop
@@ -103,13 +104,15 @@ echo    >> ${code_dir}/logs.txt 2>&1
 cd ${temp_dir}/input
 
 # run FSL's fslroi tool to crop correctly-oriented T1 and co-registered FLAIR, ready for UNets-pgs
-cp ./t1-mni.anat/T1.nii.gz                     T1.nii.gz
-cp ./flair-bet/flairvol2t1brain.nii.gz         FLAIR.nii.gz
-###################################################################################
-# if `fslsize ./t1-mni.anat/T1.nii.gz` shows any of dim1, dim2 or dim3 >= 500, then
-# fslroi ./t1-mni.anat/T1.nii.gz                     T1    20 472 8 496 0 -1
-# fslroi ./flair-bet/flairvol_trans2_t1brain.nii.gz  FLAIR 20 472 8 496 0 -1
-###################################################################################
+t1size=`fslsize ./t1-mni.anat/T1.nii.gz`
+if [ ${t1size[1]} -ge 500 ] | [ ${t1size[3]} -ge 500 ]
+then
+ fslroi ./t1-mni.anat/T1.nii.gz                     T1    20 472 8 496 0 -1
+ fslroi ./flair-bet/flairvol_trans2_t1brain.nii.gz  FLAIR 20 472 8 496 0 -1
+else
+ cp ./t1-mni.anat/T1.nii.gz                     T1.nii.gz
+ cp ./flair-bet/flairvol2t1brain.nii.gz         FLAIR.nii.gz
+fi
 
 # run FSL's flirt tool to register/align cropped T1 with full-fov T1
 flirt -in T1.nii.gz -omat T1_croppedmore2roi.mat \
@@ -141,7 +144,7 @@ cp ${temp_dir}/input/T1_croppedmore2roi.mat                     .
 cp ${temp_dir}/input/t1-mni.anat/T1.nii.gz                      T1_roi.nii.gz
 cp ${temp_dir}/input/t1-mni.anat/T1_fullfov.nii.gz              .
 cp ${temp_dir}/input/t1-mni.anat/T1_to_MNI_lin.mat              .
-cp ${temp_dir}/input/t1-mni.anat/T1_to_MNI_nonlin_coeff.nii.gz  .
+#cp ${temp_dir}/input/t1-mni.anat/T1_to_MNI_nonlin_coeff.nii.gz  .
 cp ${temp_dir}/input/t1-mni.anat/T1_roi2nonroi.mat              .
 cp ${temp_dir}/input/flair-bet/flairbrain2t1brain_inv.mat       .
 cp ${temp_dir}/input/flair-bet/flairvol.nii.gz                  FLAIR_orig.nii.gz
@@ -149,8 +152,8 @@ cp ${temp_dir}/input/flair-bet/flairvol.nii.gz                  FLAIR_orig.nii.g
 tree ${temp_dir}/input/ >> ${code_dir}/logs.txt 2>&1
 
 # copy MNI T1 template images here
-cp ${FSLDIR}/data/standard/MNI152_T1_2mm.nii.gz        .
-cp ${FSLDIR}/data/standard/MNI152_T1_2mm_brain.nii.gz  .
+cp ${FSLDIR}/data/standard/MNI152_T1_1mm.nii.gz        .
+cp ${FSLDIR}/data/standard/MNI152_T1_1mm_brain.nii.gz  .
 
 echo "STEP 01" >> ${code_dir}/logs.txt 2>&1
 # run FSL's flirt tool to transform/align WML segmentations from UNets-pgs with roi-cropped T1
@@ -174,13 +177,13 @@ echo "STEP 04" >> ${code_dir}/logs.txt 2>&1
 # run FSL's flirt tool to linearly transform/align WML segmentations with MNI T1
 flirt -in results2t1roi.nii.gz -applyxfm -init T1_to_MNI_lin.mat \
    -out results2mni_lin \
-   -paddingsize 0.0 -interp nearestneighbour -ref ${FSLDIR}/data/standard/MNI152_T1_2mm_brain.nii.gz >> ${code_dir}/logs.txt 2>&1
+   -paddingsize 0.0 -interp nearestneighbour -ref MNI152_T1_1mm_brain.nii.gz >>   ${code_dir}/logs.txt 2>&1
 
 echo "STEP 06" >> ${code_dir}/logs.txt 2>&1
 # run FSL's applywarp tool to nonlinearly warp WML segmentations with MNI T1
-applywarp --in=results2t1roi.nii.gz --warp=T1_to_MNI_nonlin_coeff.nii.gz \
-   --out=results2mni_nonlin \
-   --interp=nn --ref=${FSLDIR}/data/standard/MNI152_T1_2mm_brain.nii.gz >> ${code_dir}/logs.txt 2>&1
+#applywarp --in=results2t1roi.nii.gz --warp=T1_to_MNI_nonlin_coeff.nii.gz \
+#   --out=results2mni_nonlin \
+#   --interp=nn --ref=${FSLDIR}/data/standard/MNI152_T1_2mm_brain.nii.gz >> ${code_dir}/logs.txt 2>&1
 
 # copy all contents of temporary data directory to output data directory, and delete temporary data directory
 echo copying all contents   >> ${code_dir}/logs.txt 2>&1

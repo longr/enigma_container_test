@@ -61,8 +61,8 @@ export APPTAINER_TMPDIR=/mnt/data/tmp/
 convert like so:
 
 ```bash
-podman save --format oci-archive busybox:latest -o busybox.tar
-singularity build busybox.sif oci-archive://busybox.tar
+podman save --format oci-archive fsl_test:latest -o fsl_test.tar
+singularity build fsl_test.sif oci-archive://fsl_test.tar
 ```
 
 

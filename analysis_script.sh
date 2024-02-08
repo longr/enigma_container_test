@@ -28,7 +28,9 @@ echo subjids_list : ${subjids_list} >> ${code_dir}/logs.txt 2>&1
 
 # replace with 1 to test
 export subjid=`awk "NR==1" ${subjids_list}`
-echo subjid : ${subjid} >> ${code_dir}/logs.txt 2>&1
+for subjid in `cat subjids_list`;
+
+do echo subjid : ${subjid} >> ${code_dir}/logs.txt 2>&1
 echo   >> ${code_dir}/logs.txt 2>&1
 
 # search full paths and filenames for input T1 and FLAIR images in compressed NIfTI format
@@ -203,3 +205,4 @@ cd ${data_outpath}
 ##     using site_study_${subjid} as zip filename,
 ##     and upload to ENIGMA-PD-Vasc group
 ##
+done;

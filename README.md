@@ -4,7 +4,7 @@
 
 The container can be run and built using the two scripts.  To build the container locally run the following command.
 
-The container will expect 2 direcories, `./code` and `./data` where data should contain the correct directory structure and the `ubjects.txt`.
+The container will expect 2 direcories, `./code` and `./data` where data should contain the correct directory structure and the `subjects.txt`.
 
 ```bash
 bash docker_buildscript.sh
@@ -33,6 +33,11 @@ To run the container run:
 
 ```bash
 docker run -v $(pwd):/home -v $(pwd)/code:/code -v $(pwd)/data:/data fsl_test  >> docker_log.txt 2>&1
+```
+## Running apptainer version
+
+```bash
+apptainer run --bind $(pwd):/home,$(pwd)/code:/code,$(pwd)/data:/data fsl_test.sif >> docker_log.txt 2>&1
 ```
 
 ### Troubleshooting

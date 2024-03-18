@@ -9,7 +9,7 @@ FROM cvriend/pgs
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update && apt install -y wget bc dc tree && rm -rf /var/lib/apt/lists/*
 
-RUN wget https://fsl.fmrib.ox.ac.uk/fsldownloads/fslconda/releases/fslinstaller.py && python fslinstaller.py -d /usr/local/fsl/ -V 6.0.6
+RUN wget https://fsl.fmrib.ox.ac.uk/fsldownloads/fslconda/releases/fslinstaller.py && python fslinstaller.py -d /usr/local/fsl/ -V 6.0.7
 
 RUN echo '\n # FSL Setup \nFSLDIR=/usr/local/fsl \nPATH=${FSLDIR}/share/fsl/bin:${PATH} \nexport FSLDIR PATH \n. ${FSLDIR}/etc/fslconf/fsl.sh' >> /root/.bashrc
 

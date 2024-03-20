@@ -6,7 +6,7 @@ FSLDIR=/usr/local/fsl
 PATH=${FSLDIR}/share/fsl/bin:${PATH}
 export FSLDIR PATH
 . ${FSLDIR}/etc/fslconf/fsl.sh
-
+set -exo
 
 # assign paths for code and input data directories
 #export code_dir=/mnt/bmh01-rds/Hamied_Haroon_doc/ENIGMA-VascPD/UNets-pgs
@@ -70,7 +70,12 @@ cp ${flair_fn} flairvol_orig.nii.gz >> ${code_dir}/logs.txt 2>&1
 # run FSL's fsl_anat tool on the input T1 image, with outputs saved to a new subdirectory ${temp_dir}/input/t1-mni.anat
 echo running fsl_anat on t1 in ${temp_dir}/input/t1-mni.anat/  >> ${code_dir}/logs.txt 2>&1
 # flags this will stop fsl_anat going through unnecessary steps and generating outputs we don’t use.
-fsl_anat -o t1-mni -i ./t1vol_orig.nii.gz --nononlinreg --noseg --nosubcortseg >> ${code_dir}/logs.txt 2>&1
+# fsl_anat -o t1-mni -i ./t1vol_orig.nii.gz --nononlinreg --noseg --nosubcortseg >> ${code_dir}/logs.txt 2>&1
+# fsl_anat -o t1-mni -i ./t1vol_orig.nii.gz --nononlinreg --nosubcortseg >> ${code_dir}/logs.txt 2>&1
+fsl_anat -o t1-mni -i ./t1vol_orig.nii.gz --nosubcortseg >> ${code_dir}/logs.txt 2>&1
+
+
+
 echo fsl_anat done  >> ${code_dir}/logs.txt 2>&1
 echo   >> ${code_dir}/logs.txt 2>&1
 # fsl_anat -o t1-mni -i ./t1vol_orig.nii.gz --nocrop

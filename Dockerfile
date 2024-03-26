@@ -7,7 +7,7 @@ FROM cvriend/pgs
 
 # Need fslinstaller.py
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt update && apt install -y wget bc dc tree && rm -rf /var/lib/apt/lists/*
+RUN apt update && apt install -y wget bc dc tree parallel && rm -rf /var/lib/apt/lists/*
 
 RUN wget https://fsl.fmrib.ox.ac.uk/fsldownloads/fslconda/releases/fslinstaller.py && python fslinstaller.py -d /usr/local/fsl/ -V 6.0.7
 
